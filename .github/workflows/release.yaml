@@ -97,7 +97,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
-      - run: tar xvf ./release/release.tar
+        with:
+          name: release
+      - run: tar xvf release.tar
       - run: "docker build --pull --push --platform linux/amd64 -t ${{ env.IMAGE }} ."
         working-directory: ./dist/aks-node-termination-handler_linux_amd64_v1
 
