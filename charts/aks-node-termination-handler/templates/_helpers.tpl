@@ -61,3 +61,11 @@ Common annotations
 {{ toYaml . }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create the image reference.
+*/}}
+{{- define "aks-node-termination-handler.image" -}}
+{{- $tag := .Values.image.tag | default (printf "v%s" .Chart.AppVersion) -}}
+{{- printf "%s/%s:%s" .Values.image.registry .Values.image.repository $tag -}}
+{{- end }}
