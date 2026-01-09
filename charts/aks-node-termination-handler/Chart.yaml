@@ -6,7 +6,7 @@ version: 1.2.0
 appVersion: "2.0.0"
 description: Gracefully handle Azure Virtual Machines shutdown within Kubernetes
 maintainers:
-  - name: maksim-paskal # Maksim Paskal
+  - name: maksim-paskal  # Maksim Paskal
     email: paskal.maksim@gmail.com
   - name: vince-riv
     email: github@vince-riv.io
