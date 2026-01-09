@@ -2,6 +2,21 @@ apiVersion: v1
 entries:
   aks-node-termination-handler:
   - apiVersion: v2
+    appVersion: 2.1.0
+    created: "2026-01-09T21:31:47.715701355Z"
+    description: Gracefully handle Azure Virtual Machines shutdown within Kubernetes
+    digest: 2642b1596cbeb7be2e9f3232b2c443d08e3e32b77b997b31ac72fed7336e4c1e
+    icon: https://helm.sh/img/helm.svg
+    maintainers:
+    - email: paskal.maksim@gmail.com
+      name: maksim-paskal
+    - email: github@vince-riv.io
+      name: vince-riv
+    name: aks-node-termination-handler
+    urls:
+    - https://github.com/vince-riv/aks-node-termination-handler/releases/download/helm-chart-1.3.0/aks-node-termination-handler-1.3.0.tgz
+    version: 1.3.0
+  - apiVersion: v2
     appVersion: 2.0.0
     created: "2026-01-09T16:09:04.825092049Z"
     description: Gracefully handle Azure Virtual Machines shutdown within Kubernetes
@@ -30,4 +45,4 @@ entries:
     urls:
     - https://github.com/vince-riv/aks-node-termination-handler/releases/download/helm-chart-1.1.7/aks-node-termination-handler-1.1.7.tgz
     version: 1.1.7
-generated: "2026-01-09T16:09:04.825100755Z"
+generated: "2026-01-09T21:31:47.7157145Z"
