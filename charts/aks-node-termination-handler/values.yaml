@@ -9,7 +9,7 @@ image:
   # -- Image repository
   repository: vince-riv/aks-node-termination-handler
   # -- Image tag (defaults to appVersion if not set)
-  tag: ""
+  tag: "@sha256:50c925ac6d7436ff11dcce4798f068150b3054c19455fcab173c8c663f30e0e4"
   # -- Image pull policy
   pullPolicy: IfNotPresent
   # -- Image pull secrets
