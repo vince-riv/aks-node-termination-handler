@@ -160,7 +160,8 @@ func (r *Reader) ReadEndpoint(ctx context.Context) (bool, error) {
 				}
 
 				// check if NotBefore is too far in the future
-				if skip, err := r.shouldSkipNotBefore(event); err != nil {
+				skip, err := r.shouldSkipNotBefore(event)
+				if err != nil {
 					log.WithError(err).Warn("failed to parse NotBefore, processing event anyway")
 				} else if skip {
 					continue
@@ -188,6 +189,12 @@ func (r *Reader) getMetricsLabels() []string {
 	}
 }
 
+func (r *Reader) String() string {
+	b, _ := json.Marshal(r) //nolint:errchkjson
+
+	return string(b)
+}
+
 // shouldSkipNotBefore checks if the event's NotBefore time is too far in the future.
 // Returns true if the event should be skipped (NotBefore exceeds threshold).
 func (r *Reader) shouldSkipNotBefore(event types.ScheduledEventsEvent) (bool, error) {
@@ -198,7 +205,7 @@ func (r *Reader) shouldSkipNotBefore(event types.ScheduledEventsEvent) (bool, er
 
 	notBeforeTime, err := event.NotBeforeTime()
 	if err != nil {
-		return false, err
+		return false, errors.Wrap(err, "error parsing NotBefore time")
 	}
 
 	// empty NotBefore means event has already started
@@ -215,10 +222,4 @@ func (r *Reader) shouldSkipNotBefore(event types.ScheduledEventsEvent) (bool, er
 	}
 
 	return false, nil
-}
-
-func (r *Reader) String() string {
-	b, _ := json.Marshal(r) //nolint:errchkjson
-
-	return string(b)
 }

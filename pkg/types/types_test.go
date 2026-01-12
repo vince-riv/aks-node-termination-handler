@@ -136,15 +136,25 @@ func TestNotBeforeTime(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
 			t.Parallel()
 
-			event := types.ScheduledEventsEvent{NotBefore: tt.notBefore}
+			event := types.ScheduledEventsEvent{
+				EventId:           "",
+				EventType:         "",
+				ResourceType:      "",
+				Resources:         nil,
+				EventStatus:       "",
+				NotBefore:         testCase.notBefore,
+				Description:       "",
+				EventSource:       "",
+				DurationInSeconds: 0,
+			}
 			got, err := event.NotBeforeTime()
 
-			if (err != nil) != tt.wantErr {
-				t.Errorf("NotBeforeTime() error = %v, wantErr %v", err, tt.wantErr)
+			if (err != nil) != testCase.wantErr {
+				t.Errorf("NotBeforeTime() error = %v, wantErr %v", err, testCase.wantErr)
 
 				return
 			}
@@ -153,8 +163,8 @@ func TestNotBeforeTime(t *testing.T) {
 				return
 			}
 
-			if got.IsZero() != tt.wantZero {
-				t.Errorf("NotBeforeTime() isZero = %v, wantZero %v", got.IsZero(), tt.wantZero)
+			if got.IsZero() != testCase.wantZero {
+				t.Errorf("NotBeforeTime() isZero = %v, wantZero %v", got.IsZero(), testCase.wantZero)
 			}
 		})
 	}
