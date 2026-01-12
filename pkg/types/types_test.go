@@ -106,3 +106,56 @@ func TestAzureResource(t *testing.T) {
 		t.Fatal("error expected")
 	}
 }
+
+func TestNotBeforeTime(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name      string
+		notBefore string
+		wantZero  bool
+		wantErr   bool
+	}{
+		{
+			name:      "valid RFC1123 time",
+			notBefore: "Mon, 19 Sep 2016 18:29:47 GMT",
+			wantZero:  false,
+			wantErr:   false,
+		},
+		{
+			name:      "empty string returns zero time",
+			notBefore: "",
+			wantZero:  true,
+			wantErr:   false,
+		},
+		{
+			name:      "invalid format returns error",
+			notBefore: "2016-09-19T18:29:47Z",
+			wantZero:  false,
+			wantErr:   true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			event := types.ScheduledEventsEvent{NotBefore: tt.notBefore}
+			got, err := event.NotBeforeTime()
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NotBeforeTime() error = %v, wantErr %v", err, tt.wantErr)
+
+				return
+			}
+
+			if err != nil {
+				return
+			}
+
+			if got.IsZero() != tt.wantZero {
+				t.Errorf("NotBeforeTime() isZero = %v, wantZero %v", got.IsZero(), tt.wantZero)
+			}
+		})
+	}
+}
