@@ -54,8 +54,8 @@ func GetAzureResourceName(ctx context.Context, nodeName string) (string, error) 
 	return azureResourceName.EventResourceName, nil
 }
 
-func DrainNode(ctx context.Context, nodeName string, eventType string, eventID string) error { //nolint:cyclop
-	log.Infof("Draining node %s", nodeName)
+func DrainNode(ctx context.Context, nodeName string, eventType string, eventID string, podGracePeriodSeconds int) error { //nolint:cyclop
+	log.Infof("Draining node %s (podGracePeriodSeconds=%d)", nodeName, podGracePeriodSeconds)
 
 	node, err := GetNode(ctx, nodeName)
 	if err != nil {
@@ -85,7 +85,7 @@ func DrainNode(ctx context.Context, nodeName string, eventType string, eventID s
 		Ctx:                 ctx,
 		Client:              client.GetKubernetesClient(),
 		Force:               true,
-		GracePeriodSeconds:  *config.Get().PodGracePeriodSeconds,
+		GracePeriodSeconds:  podGracePeriodSeconds,
 		IgnoreAllDaemonSets: true,
 		Out:                 logger,
 		ErrOut:              logger,
@@ -97,11 +97,13 @@ func DrainNode(ctx context.Context, nodeName string, eventType string, eventID s
 	if *config.Get().DryRun {
 		log.Infof("DRY RUN ENABLED; skipping cordoning and draining of node %s", node.Name)
 	} else {
-		if err := drain.RunCordonOrUncordon(helper, node, true); err != nil {
+		err := drain.RunCordonOrUncordon(helper, node, true)
+		if err != nil {
 			return errors.Wrap(err, "error in drain.RunCordonOrUncordon")
 		}
 
-		if err := drain.RunNodeDrain(helper, node.Name); err != nil {
+		err = drain.RunNodeDrain(helper, node.Name)
+		if err != nil {
 			return errors.Wrap(err, "error in drain.RunNodeDrain")
 		}
 	}
@@ -150,7 +152,6 @@ func addTaint(ctx context.Context, node *corev1.Node, taintKey string, taintValu
 
 		return false, nil
 	})
-
 	if updateErr != nil {
 		return err
 	}
@@ -163,8 +164,10 @@ func addTaint(ctx context.Context, node *corev1.Node, taintKey string, taintValu
 func updateNodeWith(ctx context.Context, taintKey string, taintValue string, node *corev1.Node) error {
 	if *config.Get().DryRun {
 		log.Infof("DRY RUN ENABLED; skipping adding taint %s=%s on node %s", taintKey, taintValue, node.Name)
+
 		return nil
 	}
+
 	node.Spec.Taints = append(node.Spec.Taints, corev1.Taint{
 		Key:    taintKey,
 		Value:  taintValue,
