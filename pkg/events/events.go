@@ -30,8 +30,8 @@ import (
 )
 
 const (
-	requestTimeout = 10 * time.Second
-	readInterval   = 5 * time.Second
+	requestTimeout = 1 * time.Second
+	readInterval   = 1 * time.Second
 	eventCacheTTL  = 10 * time.Minute
 )
 
@@ -194,6 +194,32 @@ func (r *Reader) String() string {
 	b, _ := json.Marshal(r) //nolint:errchkjson
 
 	return string(b)
+}
+
+// Ping checks connectivity to the instance metadata API endpoint.
+func Ping(ctx context.Context) error {
+	ctx, cancel := context.WithTimeout(ctx, requestTimeout)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, *config.Get().Endpoint, nil)
+	if err != nil {
+		return errors.Wrap(err, "error creating request")
+	}
+
+	req.Header.Add("Metadata", "true")
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return errors.Wrap(err, "error connecting to instance metadata API")
+	}
+
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		return errors.Errorf("instance metadata API returned status %d", resp.StatusCode)
+	}
+
+	return nil
 }
 
 // shouldSkipNotBefore checks if the event's NotBefore time is too far in the future.
