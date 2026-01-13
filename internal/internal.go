@@ -126,6 +126,7 @@ func startReadingEvents(ctx context.Context) error {
 			notBeforeTime,
 			*config.Get().DynamicGracePeriodBuffer,
 		)
+
 		err = api.DrainNode(ctx, *config.Get().NodeName, string(event.EventType), event.EventId, podGracePeriod)
 		if err != nil {
 			return false, errors.Wrap(err, "error in DrainNode")

@@ -27,15 +27,16 @@ import (
 )
 
 const (
-	azureEndpoint                 = "http://169.254.169.254/metadata/scheduledevents?api-version=2020-07-01"
-	defaultAlertMessage           = "Draining node={{ .NodeName }}, type={{ .Event.EventType }}"
-	defaultPeriod                 = 5 * time.Second
-	defaultPodGracePeriodSeconds  = -1
-	defaultNodeGracePeriodSeconds = 120
-	defaultGracePeriodSecond      = 10
-	defaultRequestTimeout         = 5 * time.Second
-	defaultWebHookTimeout         = 30 * time.Second
-	defaultDryRun                 = false
+	azureEndpoint                   = "http://169.254.169.254/metadata/scheduledevents?api-version=2020-07-01"
+	defaultAlertMessage             = "Draining node={{ .NodeName }}, type={{ .Event.EventType }}"
+	defaultPeriod                   = 5 * time.Second
+	defaultPodGracePeriodSeconds    = -1
+	defaultNodeGracePeriodSeconds   = 120
+	defaultGracePeriodSecond        = 10
+	defaultRequestTimeout           = 5 * time.Second
+	defaultWebHookTimeout           = 30 * time.Second
+	defaultDryRun                   = false
+	defaultDynamicGracePeriodBuffer = 15 * time.Second
 )
 
 const (
@@ -122,7 +123,7 @@ var config = Type{
 	DisableEviction:          flag.Bool("disableEviction", false, "if true, force drain to use delete, even if eviction is supported. This will bypass checking PodDisruptionBudgets"),
 	NotBeforeThreshold:       flag.Duration("notBeforeThreshold", 0, "ignore events where NotBefore is further in the future than this threshold (0 to disable)"),
 	DynamicGracePeriod:       flag.Bool("dynamicGracePeriod", false, "calculate pod grace period dynamically based on NotBefore timestamp"),
-	DynamicGracePeriodBuffer: flag.Duration("dynamicGracePeriodBuffer", 15*time.Second, "buffer time to subtract when calculating dynamic grace period"),
+	DynamicGracePeriodBuffer: flag.Duration("dynamicGracePeriodBuffer", defaultDynamicGracePeriodBuffer, "buffer time to subtract when calculating dynamic grace period"),
 }
 
 func (t *Type) GracePeriod() time.Duration {

@@ -54,6 +54,7 @@ func GetAzureResourceName(ctx context.Context, nodeName string) (string, error) 
 	return azureResourceName.EventResourceName, nil
 }
 
+// DrainNode cordons and drains the specified node, optionally tainting it based on configuration.
 func DrainNode(ctx context.Context, nodeName string, eventType string, eventID string, podGracePeriodSeconds int) error { //nolint:cyclop
 	log.Infof("Draining node %s (podGracePeriodSeconds=%d)", nodeName, podGracePeriodSeconds)
 

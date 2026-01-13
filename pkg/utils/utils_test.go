@@ -45,7 +45,7 @@ func TestSleepWithContext(t *testing.T) {
 	}
 }
 
-func TestCalculatePodGracePeriod(t *testing.T) {
+func TestCalculatePodGracePeriod(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	tests := []struct {
