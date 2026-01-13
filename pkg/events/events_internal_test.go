@@ -10,6 +10,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package events
 
 import (
@@ -20,6 +21,7 @@ import (
 	"github.com/vince-riv/aks-node-termination-handler/pkg/types"
 )
 
+//nolint:funlen,paralleltest // paralleltest disabled due to global config state
 func TestShouldSkipNotBefore(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -82,7 +84,7 @@ func TestShouldSkipNotBefore(t *testing.T) {
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			threshold := testCase.threshold
-			config.Set(config.Type{
+			config.Set(config.Type{ //nolint:exhaustruct
 				NotBeforeThreshold: &threshold,
 			})
 
