@@ -30,8 +30,8 @@ import (
 )
 
 const (
-	requestTimeout = 1 * time.Second
-	readInterval   = 1 * time.Second
+	requestTimeout = 10 * time.Second
+	readInterval   = 5 * time.Second
 	eventCacheTTL  = 10 * time.Minute
 )
 
@@ -110,7 +110,7 @@ func (r *Reader) getScheduledEvents(ctx context.Context) (*types.ScheduledEvents
 		"method":  req.Method,
 		"url":     req.URL,
 		"headers": req.Header,
-	}).Debug("Doing request")
+	}).Debug("Doing request for getScheduledEvents()")
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -207,6 +207,12 @@ func Ping(ctx context.Context) error {
 	}
 
 	req.Header.Add("Metadata", "true")
+
+	log.WithFields(log.Fields{
+		"method":  req.Method,
+		"url":     req.URL,
+		"headers": req.Header,
+	}).Debug("Doing request for Ping()")
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
