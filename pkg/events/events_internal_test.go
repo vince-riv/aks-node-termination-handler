@@ -84,7 +84,13 @@ func TestShouldSkipNotBefore(t *testing.T) {
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			threshold := testCase.threshold
+			endpoint := "http://127.0.0.1/test"
+			requestTimeout := 1 * time.Second
+			period := 1 * time.Second
 			config.Set(config.Type{ //nolint:exhaustruct
+				Endpoint:           &endpoint,
+				RequestTimeout:     &requestTimeout,
+				Period:             &period,
 				NotBeforeThreshold: &threshold,
 			})
 
