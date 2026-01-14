@@ -1,9 +1,6 @@
 ---
 # Test values for chart-testing (ct install)
 
-#image:
-#  tag: "v2.2.0-3-g95187c2"
-
 env:
   - name: ANTH_DEPLOYMENT_TEST
     value: "true"
