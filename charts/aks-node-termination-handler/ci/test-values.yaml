@@ -1,0 +1,9 @@
+---
+# Test values for chart-testing (ct install)
+# Skips IMDS check since kind clusters don't have Azure IMDS
+
+image:
+  tag: "v2.2.0-2-ga319fce"
+
+args:
+  - "-skipIMDSCheck"
