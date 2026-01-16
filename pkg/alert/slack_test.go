@@ -136,17 +136,22 @@ func TestSendSlack_Success(t *testing.T) {
 func buildGitHubActionsContext() string {
 	var context string
 
-	if repo := os.Getenv("GITHUB_REPOSITORY"); repo != "" {
+	repo := os.Getenv("GITHUB_REPOSITORY")
+	if repo != "" {
 		context += "\nRepo: " + repo
 	}
 
-	if branch := os.Getenv("GITHUB_HEAD_REF"); branch != "" {
-		context += "\nBranch: " + branch
-	} else if branch := os.Getenv("GITHUB_REF_NAME"); branch != "" {
-		context += "\nBranch: " + branch
+	refName := os.Getenv("GITHUB_REF_NAME")
+	if refName != "" {
+		context += "\nRefName: " + refName
 	}
 
-	if sha := os.Getenv("GITHUB_SHA"); sha != "" {
+	sha := os.Getenv("GITHUB_PR_COMMIT_SHA")
+	if sha == "" {
+		sha = os.Getenv("GITHUB_SHA")
+	}
+
+	if sha != "" {
 		if len(sha) > 7 {
 			sha = sha[:7]
 		}
