@@ -207,6 +207,11 @@ func sendEvent(ctx context.Context, event types.ScheduledEventsEvent) error {
 		log.WithError(err).Error("error in alert.SendTelegram")
 	}
 
+	err = alert.SendSlack(message)
+	if err != nil {
+		log.WithError(err).Error("error in alert.SendSlack")
+	}
+
 	if err := webhook.SendWebHook(ctx, message); err != nil {
 		log.WithError(err).Error("error in webhook.SendWebHook")
 	}
