@@ -10,6 +10,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package alert
 
 import (
@@ -25,6 +26,20 @@ import (
 var bot *tgbotapi.BotAPI
 
 func Init() error {
+	err := initTelegram()
+	if err != nil {
+		return err
+	}
+
+	err = initSlack()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func initTelegram() error {
 	if len(*config.Get().TelegramToken) == 0 {
 		log.Warning("not sending Telegram message, no token")
 
@@ -49,6 +64,11 @@ func Ping() error {
 		if _, err := bot.GetMe(); err != nil {
 			return errors.Wrap(err, "error in bot.GetMe")
 		}
+	}
+
+	err := pingSlack()
+	if err != nil {
+		return err
 	}
 
 	return nil
