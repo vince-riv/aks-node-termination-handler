@@ -24,6 +24,9 @@ jobs:
         uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_INTEGRATION_BOT_USER_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_INTEGRATION_CHANNEL_ID }}
   golangci-lint:
     # Only lint on PRs; it's not as useful on pushes to main
     if: github.event_name == 'pull_request'

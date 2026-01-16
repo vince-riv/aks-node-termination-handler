@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
 
@@ -129,4 +130,100 @@ func TestSendSlack_Success(t *testing.T) {
 	if err != nil {
 		t.Errorf("expected nil error, got %v", err)
 	}
+}
+
+// buildGitHubActionsContext returns GitHub Actions context for test messages.
+func buildGitHubActionsContext() string {
+	var context string
+
+	if repo := os.Getenv("GITHUB_REPOSITORY"); repo != "" {
+		context += "\nRepo: " + repo
+	}
+
+	if branch := os.Getenv("GITHUB_HEAD_REF"); branch != "" {
+		context += "\nBranch: " + branch
+	} else if branch := os.Getenv("GITHUB_REF_NAME"); branch != "" {
+		context += "\nBranch: " + branch
+	}
+
+	if sha := os.Getenv("GITHUB_SHA"); sha != "" {
+		if len(sha) > 7 {
+			sha = sha[:7]
+		}
+
+		context += "\nCommit: " + sha
+	}
+
+	if prNumber := os.Getenv("GITHUB_PR_NUMBER"); prNumber != "" {
+		context += "\nPR: #" + prNumber
+	}
+
+	if runID := os.Getenv("GITHUB_RUN_ID"); runID != "" {
+		context += "\nRun: " + runID
+	}
+
+	return context
+}
+
+// TestSlackIntegration performs real API calls against Slack.
+// Skipped unless SLACK_TOKEN and SLACK_CHANNEL environment variables are set.
+//
+//nolint:paralleltest // tests modify shared global state
+func TestSlackIntegration(t *testing.T) {
+	token := os.Getenv("SLACK_TOKEN")
+	channel := os.Getenv("SLACK_CHANNEL")
+
+	if token == "" || channel == "" {
+		t.Skip("SLACK_TOKEN and SLACK_CHANNEL must be set for integration test")
+	}
+
+	// Initialize client
+	slackClient = slack.New(token)
+
+	// Test auth
+	authResp, err := slackClient.AuthTest()
+	if err != nil {
+		t.Fatalf("AuthTest failed: %v", err)
+	}
+
+	t.Logf("Authenticated as %s in team %s", authResp.User, authResp.Team)
+
+	// Build message with GitHub Actions context if available
+	messageText := "[TEST] aks-node-termination-handler integration test" + buildGitHubActionsContext()
+
+	_, timestamp, err := slackClient.PostMessage(channel, slack.MsgOptionText(messageText, false))
+	if err != nil {
+		t.Fatalf("PostMessage failed: %v", err)
+	}
+
+	t.Logf("Message sent successfully, timestamp=%s", timestamp)
+}
+
+// TestSlackIntegration_InvalidChannel tests posting to a non-existent channel.
+// Skipped unless SLACK_TOKEN environment variable is set.
+//
+//nolint:paralleltest // tests modify shared global state
+func TestSlackIntegration_InvalidChannel(t *testing.T) {
+	token := os.Getenv("SLACK_TOKEN")
+
+	if token == "" {
+		t.Skip("SLACK_TOKEN must be set for integration test")
+	}
+
+	// Initialize client
+	slackClient = slack.New(token)
+
+	// Test auth first to ensure token is valid
+	_, err := slackClient.AuthTest()
+	if err != nil {
+		t.Fatalf("AuthTest failed: %v", err)
+	}
+
+	// Try to post to non-existent channel
+	_, _, err = slackClient.PostMessage("C0A9XXXXXXX", slack.MsgOptionText("test message", false))
+	if err == nil {
+		t.Fatal("expected error posting to invalid channel, got nil")
+	}
+
+	t.Logf("Got expected error: %v", err)
 }
