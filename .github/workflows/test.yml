@@ -27,7 +27,7 @@ jobs:
           SLACK_TOKEN: ${{ secrets.SLACK_INTEGRATION_BOT_USER_TOKEN }}
           SLACK_CHANNEL: ${{ secrets.SLACK_INTEGRATION_CHANNEL_ID }}
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5
+        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
   golangci-lint:
